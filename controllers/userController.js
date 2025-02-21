@@ -4,12 +4,10 @@ const fs = require('fs')
 exports.createUser = async (req, res) => {
     try {
         const { name, email, password } = req.body;
-        const profileImage = req.files.profileImage.filename
-        const catalogs = req.files.map((cat) => cat.filename)
-        console.log(req.body);
-        console.log(req.files); 
-        
-     
+        const file = req.files 
+        const profileImage = req.files.profileImage[0].filename
+        const catalogs = req.files.catalogs.map((cat) => cat.filename) 
+
         const user = new userModel({
             name,
             email,
@@ -18,6 +16,7 @@ exports.createUser = async (req, res) => {
             catalogs: catalogs
 
         })
+        
         await user.save()
         if (!user) {
             return res.status(404).json({
@@ -47,7 +46,7 @@ exports.getOne = async (req, res) => {
             })
         }
         res.status(201).json({
-            message: 'User created successfully',
+            message: 'One User below',
             data: user
         })
     } catch (error) {
@@ -69,7 +68,7 @@ exports.getAll = async (req, res) => {
             })
         }
         res.status(201).json({
-            message: 'User created successfully',
+            message: 'All The Users Below',
             data: user
         })
     } catch (error) {
@@ -91,7 +90,6 @@ exports.updateUser = async (req, res) => {
         }
         const data = {
             name,
-
             email,
             password,
             profileImage: user.profileImage,
@@ -100,11 +98,11 @@ exports.updateUser = async (req, res) => {
         const oldFilePath = `./uploads/${user.profileImage}`
 
         console.log(oldFilePath);
-        if (req.file && req.file.fileName) {
+        if (req.files && req.files.fileName) {
             console.log('if files exists', fs.existsSync(oldFilePath));
             if (fs.existsSync(oldFilePath)) {
                 fs.unlinkSync(oldFilePath)
-                data.profileImage = req.file.originalname
+                data.profileImage = req.files.originalname
             }
         }
 

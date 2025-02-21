@@ -3,10 +3,10 @@ const { createUser , getAll, getOne, updateUser, deleteUser} = require('../contr
 const upload = require('../utils/multer')
 
 
-router.post('/user',upload.single('profileImage'),upload.array('catalogs',5),createUser)
+router.post('/user',upload.fields([{name: 'profileImage'},{name: 'catalogs'}]),createUser)
 router.get('/user',getAll)
 router.get('/user/:id',getOne)
-router.patch('/user/:id',upload.single('profileImage'),upload.array('catalogs',5),updateUser)
+router.patch('/user/:id',upload.fields([{name: 'profileImage'},{name: 'catalogs'}]),updateUser)
 router.delete('/user/:id',deleteUser)
 
 
