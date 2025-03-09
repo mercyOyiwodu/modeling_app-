@@ -1,5 +1,6 @@
 const userModel = require('../model/userModel')
 const fs = require('fs')
+const bcrypt =require('bcryptjs')
 const {validate} = require('../helper/utilities')
 const {registerSchema} =require('../validation/user')
 
