@@ -1,17 +1,24 @@
 const userModel = require('../model/userModel')
 const fs = require('fs')
+const {validate} = require('../helper/utilities')
+const {registerSchema} =require('../validation/user')
 
 exports.createUser = async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        const validatedData = await validate(req.body,registerSchema)
+        const { name, email, password } = validatedData;
+        console.log(validatedData);
+        
         const file = req.files 
         const profileImage = req.files.profileImage[0].filename
-        const catalogs = req.files.catalogs.map((cat) => cat.filename) 
+        const catalogs = req.files.catalogs.map((cat) => cat.filename)
+        const salt = await bcrypt.genSalt(10)
+        const hashedPassword = await bcrypt.hash(password,salt)
 
         const user = new userModel({
             name,
             email,
-            password,
+            password: hashedPassword,
             profileImage: profileImage,
             catalogs: catalogs
 
@@ -145,8 +152,6 @@ exports.deleteUser = async (req, res) => {
             oldFilePaths.forEach((path) => {
                 if (fs.existsSync(path)) {
                     fs.unlinkSync(path)
-
-                    console.log('Deleted file:', path);
                 }
             })
         }
